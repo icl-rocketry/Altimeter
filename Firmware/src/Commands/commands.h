@@ -32,10 +32,10 @@ namespace Commands{
     void TelemetryCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
     void ResetOrientationCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
     void ResetLocalizationCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
-    void PreventLoggingCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
-    void ReadMetaDataCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
-    void DumpData(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
-    void DumpSavedDataCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
+    // void PreventLoggingCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
+    // void ReadMetaDataCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
+    // void DumpData(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
+    // void DumpSavedDataCommand(ForwardDecl_SystemClass& system, const RnpPacketSerialized& packet);
 
     
 }

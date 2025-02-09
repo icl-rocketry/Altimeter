@@ -55,11 +55,11 @@ namespace Commands
         {ID::Calibrate_Baro, CalibrateBaroCommand},
         {ID::Set_Beta, SetBetaCommand},
         {ID::Telemetry, TelemetryCommand},
-        {ID::Free_Ram, FreeRamCommand},
-        {ID::Prevent_Logging, PreventLoggingCommand},
-        {ID::Read_Meta_Data, ReadMetaDataCommand},
-        {ID::Dump_Data, DumpData},
-        {ID::Dump_Saved_Data, DumpSavedDataCommand}
+        {ID::Free_Ram, FreeRamCommand}
+        // {ID::Prevent_Logging, PreventLoggingCommand},
+        // {ID::Read_Meta_Data, ReadMetaDataCommand},
+        // {ID::Dump_Data, DumpData},
+        // {ID::Dump_Saved_Data, DumpSavedDataCommand}
     };
 
 

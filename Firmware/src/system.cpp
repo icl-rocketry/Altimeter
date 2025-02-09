@@ -43,9 +43,7 @@ System::System() : RicCoreSystem(Commands::command_map, Commands::defaultEnabled
                    hspi(HSPI_BUS_NUM),
                    sensors(hspi, systemstatus),
                    estimator(systemstatus),
-                //    dhara_nand_flash(vspi, PinMap::IC_Cs, PinMap::IC_WP, PinMap::IC_Hold),
-                   nand_flash(vspi, PinMap::IC_Cs, PinMap::IC_WP, PinMap::IC_Hold),
-                   data_logger(nand_flash, PinMap::LED_RED, PinMap::LED_GREEN, PinMap::LED_BLUE)
+                   nandflash(vspi, PinMap::IC_Cs, PinMap::IC_WP, PinMap::IC_Hold)
                    {};
 
 void System::systemSetup()
@@ -61,26 +59,21 @@ void System::systemSetup()
 
     tunezhandler.setup();
 
-    // add interfaces to netmanager
-    // configureNetwork();
-
-    
     loadConfig();
 
     estimator.setup();
     estimator.setHome(sensors.getData());
 
+    delay(5000);
+    Serial.println("clearing line");
+    nandflash.setup();
 
-    data_logger.setup();
-    
-    data_ptr = (uint8_t*)malloc(140); 
-    if (data_ptr == nullptr) {
-        // Handle memory allocation failure
-        Serial.println("Memory allocation failed");
-        return;
+    for (int i = 0; i < 2048; i++) {
+        nandflash.m_cache_ptr[i] = 6;
     }
-
-    // nand_flash.setup();
+    // nandflash.write_page(0,1);
+    nandflash.read_page(0,1);
+    nandflash.print_cache();
 };
 
 void System::systemUpdate()
@@ -88,21 +81,9 @@ void System::systemUpdate()
     // tunezhandler.update();
     sensors.update();
     estimator.update(sensors.getData());
-    data_logger.update(sensors.getData(), estimator.getData(), data_ptr);
-    // data_logger.read_meta_data();
     
-    // for (int i = 0; i < 4; i++) {
-    //     nand_flash.read_page(0, i);
-    //     Serial.print("Page " + String(i) + ": ");
-    //     for (int j = 0; j < 2048; j++) {
-    //         Serial.print(nand_flash.cache_ptr[j]);
-    //         Serial.print(" ");
-    //     }
-    //     Serial.println();
-    // }
-
-    // delay(100000);
-
+    nandflash.read_page(0,1);
+    nandflash.print_cache_short();
 };
 
 void System::setupSPI()
@@ -113,7 +94,7 @@ void System::setupSPI()
     hspi.setDataMode(SPI_MODE0);
 
     vspi.begin(PinMap::IC_SCLK,PinMap::IC_MISO,PinMap::IC_MOSI);
-    vspi.setFrequency(8000000);
+    vspi.setFrequency(1000000);
     vspi.setBitOrder(MSBFIRST);
     vspi.setDataMode(SPI_MODE0); // Set the SPI data mode
 }

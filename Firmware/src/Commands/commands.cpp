@@ -25,7 +25,7 @@
 
 #include "States/idle.h"
 
-#include "Storage/data_logger.h"
+#include "Storage/datalogger.h"
 
 void Commands::SetBetaCommand(System& system, const RnpPacketSerialized& packet) 
 {
@@ -217,89 +217,89 @@ void Commands::ResetLocalizationCommand(System& system, const RnpPacketSerialize
 	system.estimator.setup();
 	system.tunezhandler.play(MelodyLibrary::confirmation); //play sound when complete
 }
-void Commands::PreventLoggingCommand(System& system, const RnpPacketSerialized& packet) 
-{
-	system.data_logger.logging_data = false;
-	system.tunezhandler.play(MelodyLibrary::confirmation); //play sound when complete
-}
-void Commands::ReadMetaDataCommand(System& system, const RnpPacketSerialized& packet) 
-{
-		/// ESP_LOGI("ch", "%s", "deserialize");
+// void Commands::PreventLoggingCommand(System& system, const RnpPacketSerialized& packet) 
+// {
+// 	system.datalogger.logging_data = false;
+// 	system.tunezhandler.play(MelodyLibrary::confirmation); //play sound when complete
+// }
+// void Commands::ReadMetaDataCommand(System& system, const RnpPacketSerialized& packet) 
+// {
+// 		/// ESP_LOGI("ch", "%s", "deserialize");
 
-	SimpleCommandPacket commandpacket(packet);
+// 	SimpleCommandPacket commandpacket(packet);
 
-	std::vector<Data_Logger::MetaFileInfo> files = system.data_logger.read_meta_data();
+// 	std::vector<DataLogger::MetaFileInfo> files = system.datalogger.read_meta_data();
 
-	std::string string;
-	for (const auto& file : files) {
-		string += "File from block " + std::to_string(file.start_block) + 
-				  " to block " + std::to_string(file.end_block) + 
-				  " File number: " + std::to_string(file.file_number) + "\n";
-	}
+// 	std::string string;
+// 	for (const auto& file : files) {
+// 		string += "File from block " + std::to_string(file.start_block) + 
+// 				  " to block " + std::to_string(file.end_block) + 
+// 				  " File number: " + std::to_string(file.file_number) + "\n";
+// 	}
 
-	MessagePacket_Base<0,static_cast<uint8_t>(decltype(System::commandhandler)::PACKET_TYPES::MESSAGE_RESPONSE)> message(string);
-	// this is not great as it assumes a single command handler with the same service ID
-	// would be better if we could pass some context through the function paramters so it has an idea who has called it
-	// or make it much clearer that only a single command handler should exist in the system
-		message.header.source_service = system.commandhandler.getServiceID(); 
-		message.header.destination_service = packet.header.source_service;
-		message.header.source = packet.header.destination;
-		message.header.destination = packet.header.source;
-		message.header.uid = packet.header.uid;
-		system.networkmanager.sendPacket(message);
+// 	MessagePacket_Base<0,static_cast<uint8_t>(decltype(System::commandhandler)::PACKET_TYPES::MESSAGE_RESPONSE)> message(string);
+// 	// this is not great as it assumes a single command handler with the same service ID
+// 	// would be better if we could pass some context through the function paramters so it has an idea who has called it
+// 	// or make it much clearer that only a single command handler should exist in the system
+// 		message.header.source_service = system.commandhandler.getServiceID(); 
+// 		message.header.destination_service = packet.header.source_service;
+// 		message.header.source = packet.header.destination;
+// 		message.header.destination = packet.header.source;
+// 		message.header.uid = packet.header.uid;
+// 		system.networkmanager.sendPacket(message);
 
-}
-void Commands::DumpData(System& system, const RnpPacketSerialized& packet) 
-{
+// }
+// void Commands::DumpData(System& system, const RnpPacketSerialized& packet) 
+// {
 
-	SimpleCommandPacket commandpacket(packet);
+// 	SimpleCommandPacket commandpacket(packet);
 
 
-	system.data_logger.dump_next_page();
+// 	system.datalogger.dump_next_page();
 
-	std::string string;
-	string += std::to_string(system.data_logger.data_dump_page_number / 64) + ", " + std::to_string(system.data_logger.data_dump_page_number % 64) + ", ";
-	for (int i = 0; i < 100; i++) {
-		string += std::to_string(system.nand_flash.cache_ptr[i]) + ", ";
-	}
+// 	std::string string;
+// 	string += std::to_string(system.datalogger.data_dump_page_number / 64) + ", " + std::to_string(system.datalogger.data_dump_page_number % 64) + ", ";
+// 	for (int i = 0; i < 100; i++) {
+// 		string += std::to_string(system.nandflash.cache_ptr[i]) + ", ";
+// 	}
 
-	MessagePacket_Base<0,static_cast<uint8_t>(decltype(System::commandhandler)::PACKET_TYPES::MESSAGE_RESPONSE)> message(string);
-		message.header.source_service = system.commandhandler.getServiceID(); 
-		message.header.destination_service = packet.header.source_service;
-		message.header.source = packet.header.destination;
-		message.header.destination = packet.header.source;
-		message.header.uid = packet.header.uid;
-		system.networkmanager.sendPacket(message);
+// 	MessagePacket_Base<0,static_cast<uint8_t>(decltype(System::commandhandler)::PACKET_TYPES::MESSAGE_RESPONSE)> message(string);
+// 		message.header.source_service = system.commandhandler.getServiceID(); 
+// 		message.header.destination_service = packet.header.source_service;
+// 		message.header.source = packet.header.destination;
+// 		message.header.destination = packet.header.source;
+// 		message.header.uid = packet.header.uid;
+// 		system.networkmanager.sendPacket(message);
 
-}
-void Commands::DumpSavedDataCommand(System& system, const RnpPacketSerialized& packet) 
-{
+// }
+// void Commands::DumpSavedDataCommand(System& system, const RnpPacketSerialized& packet) 
+// {
 
-	SimpleCommandPacket commandpacket(packet);
+// 	SimpleCommandPacket commandpacket(packet);
 
-	SavedTelemetryPacket telemetry;
+// 	SavedTelemetryPacket telemetry;
 
-	telemetry.header.type = 101;
-	telemetry.header.source = system.networkmanager.getAddress();
-	// this is not great as it assumes a single command handler with the same service ID
-	// would be better if we could pass some context through the function paramters so it has an idea who has called it
-	// or make it much clearer that only a single command handler should exist in the system
-	telemetry.header.source_service = static_cast<uint8_t>(DEFAULT_SERVICES::COMMAND);
-	telemetry.header.destination = commandpacket.header.source;
-	telemetry.header.destination_service = commandpacket.header.source_service;
-	telemetry.header.uid = commandpacket.header.uid; 
+// 	telemetry.header.type = 101;
+// 	telemetry.header.source = system.networkmanager.getAddress();
+// 	// this is not great as it assumes a single command handler with the same service ID
+// 	// would be better if we could pass some context through the function paramters so it has an idea who has called it
+// 	// or make it much clearer that only a single command handler should exist in the system
+// 	telemetry.header.source_service = static_cast<uint8_t>(DEFAULT_SERVICES::COMMAND);
+// 	telemetry.header.destination = commandpacket.header.source;
+// 	telemetry.header.destination_service = commandpacket.header.source_service;
+// 	telemetry.header.uid = commandpacket.header.uid; 
 
-	if (system.data_logger.data_dump_telem_number > 13) {
-		system.data_logger.data_dump_telem_number = 0;
-	}
+// 	if (system.datalogger.data_dump_telem_number > 13) {
+// 		system.datalogger.data_dump_telem_number = 0;
+// 	}
 
-	if (system.data_logger.data_dump_telem_number == 0) {
-		system.data_logger.dump_next_page();
-	}
-	system.data_logger.cache_to_data_ptr(system.data_ptr, system.data_logger.data_dump_telem_number);
-	system.data_logger.format_saved_data(telemetry, system.data_ptr, system.data_logger.data_dump_page_number / 64, system.data_logger.data_dump_page_number % 64, system.data_logger.data_dump_telem_number);
-	system.data_logger.data_dump_telem_number++;
+// 	if (system.datalogger.data_dump_telem_number == 0) {
+// 		system.datalogger.dump_next_page();
+// 	}
+// 	system.datalogger.cache_to_data_ptr(system.data_ptr, system.datalogger.data_dump_telem_number);
+// 	system.datalogger.format_saved_data(telemetry, system.data_ptr, system.datalogger.data_dump_page_number / 64, system.datalogger.data_dump_page_number % 64, system.datalogger.data_dump_telem_number);
+// 	system.datalogger.data_dump_telem_number++;
 
-	system.networkmanager.sendPacket(telemetry);
+// 	system.networkmanager.sendPacket(telemetry);
 
-}
+// }

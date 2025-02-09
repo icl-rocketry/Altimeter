@@ -24,8 +24,7 @@
 #include "Sound/tunezHandler.h"
 
 #include <librnp/rnp_networkmanager.h>
-#include "Storage/nand_flash.h"
-#include "Storage/data_logger.h"
+#include "Storage/nandflash.hpp"
 
 class System : public RicCoreSystem<System,SYSTEM_FLAG,Commands::ID>
 {
@@ -48,8 +47,7 @@ class System : public RicCoreSystem<System,SYSTEM_FLAG,Commands::ID>
         TunezHandler tunezhandler;
 
 
-        NAND_Flash nand_flash;
-        Data_Logger data_logger;
+        NANDFlash nandflash;
 
         uint8_t* data_ptr;
 
